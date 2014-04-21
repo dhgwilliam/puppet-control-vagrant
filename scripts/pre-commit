@@ -1,0 +1,41 @@
+#!/usr/bin/env ruby
+require 'yaml'
+
+def puppet_parser_validate(filename)
+  exit 1 unless system "puppet parser validate #{filename}"
+end
+
+def puppet_lint(filename)
+  disabled_checks = [
+    '--no-80chars-check'
+  ].join
+  exit 1 unless system "puppet-lint #{disabled_checks} #{filename}"
+end
+
+def check_yaml_syntax(filename)
+  begin
+    YAML.load_file(filename)
+  rescue Psych::SyntaxError => e
+    puts e
+    exit 1
+  end
+end
+
+root = %x{git rev-parse --show-toplevel}.chomp
+changed_files = %x{git diff --cached --diff-filter=ACMR --name-only}.split("\n")
+absolute_files = changed_files.map {|filename|
+                   File.join(root, filename) }
+
+absolute_files.each do |filename|
+  ext = File.extname(filename)
+  case ext
+  when '.pp'
+    puts "validating: #{filename}"
+    puppet_parser_validate(filename)
+    puts "linting:    #{filename}"
+    puppet_lint(filename)
+  when '.yaml'
+    puts "checking:   #{filename}"
+    check_yaml_syntax(filename)
+  end
+end

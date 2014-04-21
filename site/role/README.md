@@ -1,0 +1,3 @@
+- a role represents the business value of a node
+- one role is assigned to one node, never more
+- roles implement profiles exclusively

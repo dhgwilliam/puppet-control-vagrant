@@ -1,0 +1,4 @@
+- a profile is where site-specific configuration is injected into commodity component modules, e.g.:
+    - we may have retrieved a java module from the forge, but the `profiles::java` class is where we specify which version of java we want installed and where we host it internally
+- profiles can declare classes or resources as necessary
+- profiles generally implement a "stack" of technologies, respecting the single-reponsibility principle
