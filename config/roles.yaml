@@ -15,4 +15,13 @@ roles:
       - {type: shell, inline: '/opt/puppet/bin/puppet module install hunner/hiera --modulepath /opt/puppet/share/puppet/modules'}
       - {type: puppet, manifest_file: bootstrap.pp}
       - {type: shell, inline: 'r10k deploy env -p'}
+  pe-agent:
+    private_networks:
+      - {ip: '0.0.0.0', auto_network: true}
+    provider:
+      type: virtualbox
+    provisioners:
+      - {type: hosts}
+      - {type: shell, path: scripts/provision.sh}
+      - {type: pe_bootstrap}
       - {type: shell, inline: "/opt/puppet/bin/puppet agent -t --environment $(cd /vagrant; git rev-parse --abbrev-ref HEAD)"}
